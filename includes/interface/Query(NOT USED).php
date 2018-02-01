@@ -12,7 +12,7 @@ class Query
      * $param optional bool $prepared true / false
      * return PDOStatement object
      */
-    public function get_query(Connection $connection, $sql, $bind = NULL, $prepared = FALSE)
+    public function get_query(Connection $connection, $sql, $bind, $prepared)
     {
         try {
             if ($bind && is_array($bind)) {

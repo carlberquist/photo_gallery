@@ -31,7 +31,7 @@ class User
 
     public function insert_user(Connection $connection, Encryption $encryption, $username, $password, $first_name, $last_name)
     {
-        $sql = "INSERT INTO users (ID, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME) VALUES ('', ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (id, username, password, first_name, last_name) VALUES ('', ?, ?, ?, ?)";
         try {
             $stmnt = $connection->get_connection()->prepare($sql);
             $stmnt->execute(array($username, $encryption->encode($password), $first_name, $last_name));
@@ -42,7 +42,7 @@ class User
 
     public function update_user(Connection $connection, Encryption $encryption, $username, $password, $first_name, $last_name)
     {
-        $sql = "UPDATE users SET USERNAME = ?, PASSWORD = ?, FIRST_NAME = ?, LAST_NAME = ?";
+        $sql = "UPDATE users SET username = ?, password = ?, first_name = ?, last_name = ?";
         try {
             $stmnt = $connection->get_connection()->prepare($sql);
             $stmnt->execute(array($username, $encryption->encode($password), $first_name, $last_name));
@@ -75,9 +75,7 @@ class User
     }
     public function set_user_authenticate(Connection $connection, Encryption $encryption, $username, $password)
     {
-        $bind = array();
-        $bind[] = trim($username);
-        $bind[] = trim($password);
+        $bind = array(trim($username));
         $sql = "SELECT * FROM users WHERE username = ?";
         try {
             $stmnt = $connection->get_connection()->prepare($sql);

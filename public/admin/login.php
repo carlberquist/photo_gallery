@@ -1,13 +1,8 @@
 <?php
-require("../../includes/Session.php");
-require("../../includes/interface/Connection.php");
-require("../../includes/interface/Credentials.php");
-require("../../includes/PhotoGalleryCredentials.php");
-require("../../includes/MySQLDatabase.php");
-require("../../includes/User.php");
+require("../../includes/Initialise.php");
 
 $credentials = new Photo_gallery_credentials();
-$connection = new MySQLDatabase($credentials, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false));
+$connection = new MySQLDatabase($credentials);
 $session = new Session();
 $user = new User();
 

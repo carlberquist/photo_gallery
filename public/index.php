@@ -1,12 +1,8 @@
 <?php
-require("../includes/interface/Credentials.php");
-require("../includes/interface/Connection.php");
-require("../includes/PhotoGalleryCredentials.php");
-require("../includes/MySQLDatabase.php");
-require("../includes/User.php");
+require("../includes/Initialise.php");
 
 $credentials = new Photo_gallery_credentials();
-$database = new MySQLDatabase($credentials, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false));
+$database = new MySQLDatabase($credentials);
 $user = new User();
 
 $user->set_user_by_id($database, 1);

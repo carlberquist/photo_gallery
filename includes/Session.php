@@ -17,6 +17,7 @@ class Session
         } else {
             $this->logged_in = false;
         }
+        return $this->logged_in;
     }
 
     public function login(User $user)
