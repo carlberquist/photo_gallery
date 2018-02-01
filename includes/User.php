@@ -40,7 +40,7 @@ class User
         }
     }
 
-    public function update_user(Connection $connection, Encryption $encryption, $username, $password, $first_name, $last_name)
+    public function update_user(Connection $connection, Encryption $encryption, $username = '', $password = '', $first_name = '', $last_name = '')
     {
         $sql = "UPDATE users SET username = ?, password = ?, first_name = ?, last_name = ?";
         try {
