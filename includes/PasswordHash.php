@@ -8,7 +8,9 @@ class PasswordHash implements Encryption
 
     public function decode($input, $data)
     {
-        return password_verify($input, $data);
+        if (!password_verify($input, $data)){
+            throw new Exception('Password does not match');
+        }
     }
 }
 ?>

@@ -64,14 +64,15 @@ class User
             $this->bind_query($stmnt, 'usr_first_last');
             $stmnt->fetch(PDO::FETCH_BOUND);
             if ($encryption !== null && $password !== null) {
-                if (!$encryption->decode($password, $this->password)) {
-                    throw new Exception('Password does not match');
-                }
+                $encryption->decode($password, $this->password);
             }
         } catch (PDOException $e) {
             print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
         } catch (Exception $b) {
             print $b->getMessage() . '<br />';
+            //add message to session. Print on next page;
+            //header('Location: http://www.example.com/');
+            //exit;
         }
     }
     public function set_user_by_username(Connection $connection, $username, Encryption $encryption = null, $password = null)
@@ -82,14 +83,15 @@ class User
             $this->bind_query($stmnt, 'usr_first_last');
             $stmnt->fetch(PDO::FETCH_BOUND);
             if ($encryption !== null && $password !== null) {
-                if (!$encryption->decode($password, $this->password)) {
-                    throw new Exception('Password does not match');
-                }
+                !$encryption->decode($password, $this->password);
             }
         } catch (PDOException $e) {
             print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
         } catch (Exception $b) {
             print $b->getMessage() . '<br />';
+            //add message to session. Print on next page;
+            //header('Location: http://www.example.com/');
+            //exit;
         }
     }
     public function set_user_first_last()
