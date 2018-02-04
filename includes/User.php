@@ -83,7 +83,7 @@ class User
             $this->bind_query($stmnt, 'usr_first_last');
             $stmnt->fetch(PDO::FETCH_BOUND);
             if ($encryption !== null && $password !== null) {
-                !$encryption->decode($password, $this->password);
+                $encryption->decode($password, $this->password);
             }
         } catch (PDOException $e) {
             print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
