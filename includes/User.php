@@ -55,35 +55,47 @@ class User
      * $param optional number $id
      * return PDO
      */
-    public function set_user_by_id(Connection $connection, $id)
+    public function set_user_by_id(Connection $connection, $id, Encryption $encryption = null, $password = null)
     {
         $sql = "SELECT * FROM users WHERE id = {$id}";
         try {
             $stmnt = $connection->get_connection()->prepare($sql);
             $stmnt->execute();
             $this->bind_query($stmnt, 'usr_first_last');
-            return $stmnt->fetch(PDO::FETCH_BOUND);
+            $stmnt->fetch(PDO::FETCH_BOUND);
+            if ($encryption !== null && $password !== null) {
+                if (!$encryption->decode($password, $this->password)) {
+                    throw new Exception('Password does not match');
+                }
+            }
         } catch (PDOException $e) {
             print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
+        } catch (Exception $b) {
+            print $b->getMessage() . '<br />';
+        }
+    }
+    public function set_user_by_username(Connection $connection, $username, Encryption $encryption = null, $password = null)
+    {
+        try {
+            $stmnt = $connection->get_connection()->prepare("SELECT * FROM users WHERE username = ?");
+            $stmnt->execute(array(trim($username)));
+            $this->bind_query($stmnt, 'usr_first_last');
+            $stmnt->fetch(PDO::FETCH_BOUND);
+            if ($encryption !== null && $password !== null) {
+                if (!$encryption->decode($password, $this->password)) {
+                    throw new Exception('Password does not match');
+                }
+            }
+        } catch (PDOException $e) {
+            print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
+        } catch (Exception $b) {
+            print $b->getMessage() . '<br />';
         }
     }
     public function set_user_first_last()
     {
         if (isset($this->first_name) && isset($this->last_name)) {
             $this->usr_first_last = $this->first_name . " " . $this->last_name;
-        }
-    }
-    public function set_user_authenticate(Connection $connection, Encryption $encryption, $username, $password)
-    {
-        $bind = array(trim($username));
-        $sql = "SELECT * FROM users WHERE username = ?";
-        try {
-            $stmnt = $connection->get_connection()->prepare($sql);
-            $stmnt->execute($bind);
-            $this->bind_query($stmnt, 'usr_first_last');
-            return ($stmnt->fetch(PDO::FETCH_BOUND) && $encryption->decode($bind[1], $this->password)) ? true : false;
-        } catch (PDOException $e) {
-            print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
         }
     }
 

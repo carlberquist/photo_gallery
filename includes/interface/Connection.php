@@ -1,6 +1,7 @@
 <?php
-interface Connection{
-    public function __construct(credentials $db_cred, $opts);
-    public function get_connection();
+interface Connection
+{
+    function __construct(credentials $db_cred, $opts);
+    function get_connection();
 }
 ?>

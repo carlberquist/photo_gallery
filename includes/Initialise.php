@@ -13,4 +13,5 @@ require("Hmac.php");
 require("User.php");
 require("Session.php");
 require("Functions.php");
+require("PasswordHash.php");
 ?>
