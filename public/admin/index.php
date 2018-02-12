@@ -15,24 +15,7 @@ $user->set_user_by_id($connection, $_SESSION['user_uid']);
 $user->set_user_first_last();
 
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Photo Gallery</title>
-    <link rel="stylesheet" type="text/css" media="all" href="../../stylesheets/main.css" />
-</head>
-<body>
-    <div id = "header">
-<h1>Photo Gallery</h1>
-    </div>
+<?php include('../layouts/admin_header.php');?>
     <div>Welcome: <?php echo $user->get_user_var('usr_first_last');?></div>
-    <div id = "main">
 <h2>Menu</h2>
-    </div>
-    <div id = "footer">
-    Copyright <?php echo date("Y", time()); ?>, Carl Berquist
-    </div>
-</body>
-</html>
+    <?php include('../layouts/admin_footer.php');?>

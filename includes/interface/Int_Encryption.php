@@ -1,5 +1,5 @@
 <?php
-interface Encryption
+interface Int_Encryption
 {
     //function __contruct($enc_type, $key);
     function encode($data);

@@ -1,5 +1,5 @@
 <?php
-class PasswordHash implements Encryption
+class PasswordHash implements Int_Encryption
 {
     public function encode($data)
     {

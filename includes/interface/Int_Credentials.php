@@ -1,7 +1,7 @@
 <?php
 //No public function etc
 //Define function dependancies here
-interface Credentials
+interface Int_Credentials
 {
     function get_credentials();
 }

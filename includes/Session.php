@@ -6,7 +6,9 @@ class Session
 
     public function __construct()
     {
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
         $this->check_login();
     }
 
@@ -22,8 +24,9 @@ class Session
 
     public function login(User $user)
     {
-            $_SESSION['user_uid'] = $user->get_user_var('id');
-            $this->logged_in = true;
+        $_SESSION['user_uid'] = $user->get_user_var('id');
+        $this->logged_in = true;
+        return $this->logged_in;
     }
     public function logout()
     {

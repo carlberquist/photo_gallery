@@ -1,8 +1,8 @@
 <?php
-class Hmac implements Encryption
+class Hmac implements Int_Encryption
 {
     private $key = 'C694AE29CFC1402BEF09225021ED311A';
-    private $enc_type = 'sha256'; 
+    private $enc_type = 'sha256';
 
     public function __contruct($enc_type = '', $key = '')
     {
@@ -13,9 +13,9 @@ class Hmac implements Encryption
             $this->enc_type = $enc_type;
         }
     }
-/***
- * generates 64 char string
- */
+    /***
+     * generates 64 char string
+     */
     public function encode($data)
     {
         return hash_hmac($this->enc_type, $data, $this->key);
@@ -23,7 +23,9 @@ class Hmac implements Encryption
 
     public function decode($input, $data)
     {
-        return hash_equals(hash_hmac($this->enc_type, $input, $this->key), $data);
+        if (!hash_equals(hash_hmac($this->enc_type, $input, $this->key), $data)) {
+            throw new Exception('hash does not match');
+        }
     }
 }
 ?>

@@ -1,35 +1,14 @@
 <?php
 class User
 {
-    private $id;
-    private $username;
-    private $password;
-    private $first_name;
-    private $last_name;
-    private $usr_first_last;
+    public $id;
+    public $username;
+    public $password;
+    public $first_name;
+    public $last_name;
+    public $usr_first_last;
 
-    private function bind_query($stmnt, $exclude)
-    {
-        $object_vars = get_object_vars($this);
-        if (is_array($exclude)) {
-            foreach ($object_vars as $attribute => $value) {
-                foreach ($exclude as $exc) {
-                    if ($attribute != $exc) {
-                        $stmnt->bindColumn($attribute, $this->{$attribute});
-                    }
-                }
-            }
-        } else {
-            foreach ($object_vars as $attribute => $value) {
-                if ($attribute != $exclude) {
-                    $stmnt->bindColumn($attribute, $this->{$attribute});
-                }
-
-            }
-        }
-    }
-
-    public function insert_user(Connection $connection, Encryption $encryption, $username, $password, $first_name, $last_name)
+    public function insert_user(Int_Connection $connection, Intl_Encryption $encryption, $username, $password, $first_name, $last_name)
     {
         $sql = "INSERT INTO users (id, username, password, first_name, last_name) VALUES ('', ?, ?, ?, ?)";
         try {
@@ -40,68 +19,76 @@ class User
         }
     }
 
-    public function update_user(Connection $connection, Encryption $encryption, $username = '', $password = '', $first_name = '', $last_name = '')
+    public function update_user(Int_Connection $connection, Intl_Encryption $encryption, $username = '', $password = '', $first_name = '', $last_name = '')
     {
-        $sql = "UPDATE users SET username = ?, password = ?, first_name = ?, last_name = ?";
-        try {
-            $stmnt = $connection->get_connection()->prepare($sql);
-            $stmnt->execute(array($username, $encryption->encode($password), $first_name, $last_name));
-        } catch (PDOException $e) {
-            print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
+        $query = '';
+        $stmntExecute = array();
+        if (!empty($username)) {
+            $query .= "username = ?,";
+            $stmntExecute[] = $username;
         }
+        if (!empty($password)) {
+            $query .= "password = ?,";
+            $stmntExecute[] = $encryption->encode($password);
+        }
+        if (!empty($first_name)) {
+            $query .= "first_name = ?,";
+            $stmntExecute[] = $first_name;
+        }
+        if (!empty($last_name)) {
+            $query .= "last_name = ?,";
+            $stmntExecute[] = $last_name;
+        }
+        if (!empty($username) && !empty($password) && !empty($first_name) && !empty($last_name)) {
+            throw new Exception('Please fill in at least one field');
+            return;
+        }
+        $query = substr($query, 0, -1);
+        $connection->get_query("UPDATE users SET {$query} WHERE id = {$this->id}", $stmntExecute);
+        $this->set_user_by_id($connection, $this->id);
     }
     /***
      * @param interface Connection = database connection
      * $param optional number $id
      * return PDO
      */
-    public function set_user_by_id(Connection $connection, $id, Encryption $encryption = null, $password = null)
+    public function set_user_by_id(Int_Connection $connection, $id)
     {
-        $sql = "SELECT * FROM users WHERE id = {$id}";
-        try {
-            $stmnt = $connection->get_connection()->prepare($sql);
-            $stmnt->execute();
-            $this->bind_query($stmnt, 'usr_first_last');
-            $stmnt->fetch(PDO::FETCH_BOUND);
-            if ($encryption !== null && $password !== null) {
-                $encryption->decode($password, $this->password);
-            }
-        } catch (PDOException $e) {
-            print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
-        } catch (Exception $b) {
-            print $b->getMessage() . '<br />';
-            //add message to session. Print on next page;
-            //header('Location: http://www.example.com/');
-            //exit;
+        $stmnt = $connection->get_query("SELECT * FROM users WHERE id = {$id}");
+        $connection->bind_query($this, $stmnt, "usr_first_last");
+        $stmnt->fetch(PDO::FETCH_BOUND);
+        $this->set_user_first_last();
+    }
+    public function set_user_by_username(Int_Connection $connection, $username, Intl_Encryption $encryption = null, $password = null)
+    {
+        $stmnt = $connection->get_query("SELECT * FROM users WHERE username = ?", array(trim($username)));
+        $connection->bind_query($this, $stmnt, "usr_first_last");
+        $stmnt->fetch(PDO::FETCH_BOUND);
+        $this->set_user_first_last();
+        if (!is_null($encryption) && !is_null($password)) {
+            authenticate_user($encryption, $password);
         }
     }
-    public function set_user_by_username(Connection $connection, $username, Encryption $encryption = null, $password = null)
-    {
-        try {
-            $stmnt = $connection->get_connection()->prepare("SELECT * FROM users WHERE username = ?");
-            $stmnt->execute(array(trim($username)));
-            $this->bind_query($stmnt, 'usr_first_last');
-            $stmnt->fetch(PDO::FETCH_BOUND);
-            if ($encryption !== null && $password !== null) {
-                $encryption->decode($password, $this->password);
-            }
-        } catch (PDOException $e) {
-            print "PDO Query Error!: " . $e->getMessage() . '<br /> Error in query' . $sql;
-        } catch (Exception $b) {
-            print $b->getMessage() . '<br />';
-            //add message to session. Print on next page;
-            //header('Location: http://www.example.com/');
-            //exit;
-        }
-    }
-    public function set_user_first_last()
+    private function set_user_first_last()
     {
         if (isset($this->first_name) && isset($this->last_name)) {
             $this->usr_first_last = $this->first_name . " " . $this->last_name;
         }
     }
 
-    public function get_all_users(Connection $connection)
+    private function authenticate_user(Int_Encryption $encryption, $password)
+    {
+        try {
+            $encryption->decode($password, $this->password);
+        } catch (Exception $b) {
+            print $b->getMessage() . '<br />';
+            //TODO add message to session in class PasswordHash. Print on next page;
+            header("Location: index.php");
+            exit;
+        }
+    }
+
+    public function get_all_users(Int_Connection $connection)
     {
         $sql = "SELECT * FROM users";
         try {
@@ -118,6 +105,14 @@ class User
     {
         if (isset($this->{$var})) {
             return $this->{$var};
+        } else {
+            throw new Exception("{$var} not found in " . get_class($this), 1);
+        }
+    }
+    public function set_user_var($var)
+    {
+        if (!$this->{$var} = $var){
+            throw new Exception("{$var} not set in " . get_class($this), 1);
         }
     }
     public function get_all_user_vars()
