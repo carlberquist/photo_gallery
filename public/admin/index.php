@@ -1,21 +1,33 @@
 <?php
 require("../../includes/Initialise.php");
 
-$credentials = new Photo_gallery_credentials();
+$credentials = new PhotoGalleryCredentials();
 $connection = new MySQLDatabase($credentials);
-$session = new Session();
 $user = new User();
+$session = new Session();
+$logger = new Logger();
 
-if (!$session->get_logged_in()) {
+if (!$session->check_login() || isset($_GET['logout'])) {
+    $session->logout();
     header("Location: login.php");
     exit;
 }
 
 $user->set_user_by_id($connection, $_SESSION['user_uid']);
-$user->set_user_first_last();
 
+if (isset($_GET['clear'])) {
+    $logger->clear_logfile($user);
+    header("Location: index.php");
+    exit;
+}
+
+$logger->create_log_file($user->usr_first_last, 'Successfully logged in');
 ?>
-<?php include('../layouts/admin_header.php');?>
-    <div>Welcome: <?php echo $user->get_user_var('usr_first_last');?></div>
+<?php include('../layouts/admin_header.php'); ?>
+<div>Welcome: <?php echo $user->get_user_var('usr_first_last'); ?></div>
+<p><a href="index.php?logout=true" class="button">Log Out</a></p>
 <h2>Menu</h2>
-    <?php include('../layouts/admin_footer.php');?>
+<h3>Log File</h3>
+<p><a href="index.php?clear=true">Clear Log file</a></p>
+<?php echo ($logger->read_log_file()); ?>
+<?php include('../layouts/admin_footer.php'); ?>

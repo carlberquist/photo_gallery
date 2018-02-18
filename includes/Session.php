@@ -12,7 +12,7 @@ class Session
         $this->check_login();
     }
 
-    private function check_login()
+    public function check_login()
     {
         if (isset($_SESSION['user_uid'])) {
             $this->logged_in = true;
@@ -24,13 +24,15 @@ class Session
 
     public function login(User $user)
     {
-        $_SESSION['user_uid'] = $user->get_user_var('id');
+        $_SESSION['user_uid'] = $user->id;
         $this->logged_in = true;
         return $this->logged_in;
     }
     public function logout()
     {
-        unset($_SESSION['user_uid']);
+        if (isset($_SESSION['user_uid'])) {
+            unset($_SESSION['user_uid']);
+        }
         $this->logged_in = false;
     }
 

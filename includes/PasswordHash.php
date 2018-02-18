@@ -10,7 +10,9 @@ class PasswordHash implements Int_Encryption
     {
         if (!password_verify($input, $data)){
             throw new Exception('Password does not match');
+            return false;
         }
+        return true;
     }
 }
 ?>

@@ -2,10 +2,10 @@
 spl_autoload_register(function ($class_name) {
     //TODO change to use NAMESPACES
     $first = strtok($class_name, '_');
-    if ($first == 'Int'){
-        require_once 'interface/' . $class_name . '.php';
+    if ($first == 'Int') {
+        require_once LIB_PATH . 'interface' . DS . $class_name . '.php';
     } else {
-    require_once $class_name . '.php';
+        require_once LIB_PATH . $class_name . '.php';
     }
     //throw new MissingException("Unable to load $name.");
 });
@@ -21,8 +21,8 @@ function strip_zeros_from_date($marked_string = "")
 
 function redirect_to($location)
 {
-        header("Location: {$location}");
-        exit;
+    header("Location: {$location}");
+    exit;
 }
 
 function output_message($message = "")

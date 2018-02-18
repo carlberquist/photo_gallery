@@ -1,26 +1,27 @@
 <?php
 require("../../includes/Initialise.php");
 
-$credentials = new Photo_gallery_credentials();
-$connection = new MySQLDatabase($credentials);
-$session = new Session();
-$user = new User();
-$encryption = new PasswordHash();
+try {
+    $credentials = new PhotoGalleryCredentials();
+    $connection = new MySQLDatabase($credentials);
+    $encryption = new PasswordHash();
+    $user = new User();
+    $session = new Session();
 
-if ($session->get_logged_in()) {
-    header("Location: index.php");
-    exit;
-}
-//if (isset($_POST['submit'])) {}
-if (empty($_POST['username']) || empty($_POST['password'])) {
-        //add message to session "fill in username or password";
-    header("Location: login.php");
-    exit;
-}
-$user->set_user_by_username($connection, $encryption, $_POST['username'], $_POST['password']);
-if ($session->login($user)){
-header("Location: index.php");
-exit;
+    if ($session->get_logged_in()) {
+        header("Location: index.php");
+        exit;
+    }
+    if (!empty($_POST['username']) && !empty($_POST['password'])) {
+        if (!$user->authenticate_user($encryption, $session, $_POST['password'], $connection, $_POST['username'])) {
+            header("Location: index.php");
+            exit;
+        }
+    } else {
+        throw new Exception("Please enter a username or password", 1);
+    }
+} catch (Exception $e) {
+    $error_msg = $e->getMessage();
 }
 ?>
 <!DOCTYPE html>
@@ -37,7 +38,7 @@ exit;
     </div>
     <div id = "main">
     <h2>Staff Login</h2>
-    <?php if (isset($message)) echo $message; ?>
+    <?php if (isset($error_msg)) echo $error_msg; ?>
     <form action = "login.php" method = "post">
         <table>
         <tr>
