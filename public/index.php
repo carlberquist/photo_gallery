@@ -26,6 +26,7 @@ foreach ($file_upload->files as $photo) {
 echo ($photo_html);
 $page = "";
 if ($pagination->total_pages > 1) {
+    $page .= "<div id='pagination' style = 'clear: both';>";
     $previous_page = $pagination->get_previous_page();
     if ($previous_page) {
         $page .= "<a href=\"" . basename($_SERVER['PHP_SELF']) . "page=" . $previous_page . "\">&laquo; Previous</a>";
@@ -37,6 +38,7 @@ if ($pagination->total_pages > 1) {
     if ($next_page) {
         $page .= "<a href=\"" . basename($_SERVER['PHP_SELF']) . "page=" . $$next_page . "\"> Next &raquo;</a>";
     }
+    $page .= "</div>";
 }
 echo($page);
 ?>
