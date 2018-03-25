@@ -8,12 +8,11 @@ class Pagination
     public $total_pages;
     public $sql;
 
-    public function __construct(Int_Connection $connection,$page = 1, $per_page = 2, $total_count = 0)
+    public function __construct(Int_Connection $connection,$page = 1, $per_page = 2)
     {
         $this->connection = $connection;
         $this->current_page = (int)$page;
         $this->per_page = (int)$per_page;
-        $this->total_count = (int)$total_count;
     }
     public function set_sql($sql){
         $this->sql = $sql;
