@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible">
     <title>Photo Gallery</title>
     <link rel="stylesheet" type="text/css" media="all" href="stylesheets/main.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
     <div id = "header">

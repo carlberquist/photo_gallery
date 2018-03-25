@@ -3,6 +3,6 @@
 //Define function dependancies here
 interface Int_Credentials
 {
-    function get_credentials($var);
+    public function get_credentials($var);
 }
 ?>

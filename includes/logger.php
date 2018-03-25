@@ -2,7 +2,13 @@
 
 class Logger
 {
+    private $user;
     public $logfile = SITE_ROOT . DS . "logs" . DS . "log.txt";
+
+    public function __construct(Int_User $user)
+    {
+        $this->user = $user;
+    }
 
     public function create_log_file($action, $message = '')
     {
@@ -25,7 +31,6 @@ class Logger
         }
     }
 
-
     public function read_log_file()
     {
         if (file_exists($this->logfile) && is_readable($this->logfile) && $handle = fopen($this->logfile, 'r')) {
@@ -44,15 +49,23 @@ class Logger
         }
     }
 
-    public function clear_logfile(User $user)
+    public function clear_logfile()
     {
         file_put_contents($this->logfile, '');
-        $this->create_log_file('Logs Cleared', "by User {$user->usr_first_last}");
+        $this->create_log_file('Logs Cleared', "by User {$this->user->usr_first_last}");
     }
 
     public function set_logfile($path)
     {
         $this->logfile($path);
+    }
+    public function get_logfile_var($var)
+    {
+        if (isset($this->{$var})) {
+            return $this->{$var};
+        } else {
+            throw new Exception("{$var} not found in " . get_class($this), 1);
+        }
     }
 }
 

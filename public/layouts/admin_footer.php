@@ -4,6 +4,6 @@
 </html>
 <?php 
 if (isset($connection)) {
-  $connection = null;
+  $connection->__destruct();
 }
 ?>

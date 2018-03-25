@@ -1,15 +1,17 @@
 <?php
 class Session
 {
-
     private $logged_in = false;
+    private $user;
+    private $encryption;
 
-    public function __construct()
+    public function __construct(Int_User $user, Int_Encryption $encryption)
     {
+        $this->user = $user;
+        $this->encryption = $encryption;
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
-        $this->check_login();
     }
 
     public function check_login()
@@ -22,10 +24,14 @@ class Session
         return $this->logged_in;
     }
 
-    public function login(User $user)
+    public function login($password)
     {
-        $_SESSION['user_uid'] = $user->id;
-        $this->logged_in = true;
+        if ($this->encryption->decode($password, $this->user->get_user_var('password'))) {
+            $_SESSION['user_uid'] = $this->user->id;
+            $this->logged_in = true;
+        } else {
+            $this->logged_in = false;
+        }
         return $this->logged_in;
     }
     public function logout()
@@ -36,9 +42,13 @@ class Session
         $this->logged_in = false;
     }
 
-    public function get_logged_in()
+    public function get_logged_in($var)
     {
-        return $this->logged_in;
+        if (isset($this->{$var})) {
+            return $this->{$var};
+        } else {
+            throw new Exception("{$var} not found in " . get_class($this), 1);
+        }
     }
 }
 ?>

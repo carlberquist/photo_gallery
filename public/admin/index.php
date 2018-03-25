@@ -3,8 +3,9 @@ require("../../includes/Initialise.php");
 
 $credentials = new PhotoGalleryCredentials();
 $connection = new MySQLDatabase($credentials);
-$user = new User();
+$encryption = new PasswordHash();
 $session = new Session();
+$user = new User($connection, $encryption);
 $logger = new Logger();
 
 if (!$session->check_login() || isset($_GET['logout'])) {
